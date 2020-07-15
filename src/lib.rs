@@ -12,6 +12,7 @@ pub struct Config {
 }
 
 impl Config {
+    // TODO: rewrite with proper errors
     pub fn new(mut args: std::env::Args) -> Result<Config, &'static str> {
         args.next(); // drop the executable
 
@@ -72,7 +73,9 @@ impl Entry {
 
         // Get file name by splitting on slashes and taking the last part
         // or just taking the whole path if there are no slashes
-        let title = path.split(|c| c == '/' || c == '\\').last().unwrap();
+        let title = path.rsplit(|c| c == '/' || c == '\\')
+            .next()
+            .unwrap();
         let title = if title.ends_with(".xml") {
             &title[..title.len()-4]
         } else {
