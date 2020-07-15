@@ -99,23 +99,23 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
             rde.ok()
                 // On the Some()s, run this
                 .and_then(|de| -> Option<String> {
-                    // Get path
-                    let pb = de.path();
-                    // Check the extension
-                    match pb.extension() {
-                        // If there is an extension...
-                        Some(ext) => if ext == "xml" || ext == "html" {
-                            // ... and it's XML or HTML... (is the above case sensitive?)
-                            pb.into_os_string()
-                                .into_string()
-                                .ok() // ... convert it out to an Option<String>
-                        } else {
-                            // If it's not the correct extension, reject
-                            None
-                        },
-                        // If no extension, reject
-                        None => None,
-                    }
+                    // Get the path and check the extension
+                    de.path()
+                        .extension()
+                        .and_then(|ext| {
+                            // If it's XML or HTML... (is the above case sensitive?)
+                            if ext == "xml" || ext == "html" {
+
+                                // ... convert it out to an Option<String>
+                                de.path()
+                                    .into_os_string()
+                                    .into_string()
+                                    .ok()
+                            } else {
+                                // If it's not the correct extension, reject
+                                None
+                            }
+                        })
                 })
         })
         // Shove all those relevant paths through Entry::new...
